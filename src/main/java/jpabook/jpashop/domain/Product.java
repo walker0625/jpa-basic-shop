@@ -8,16 +8,12 @@ import java.util.List;
 
 @Data
 @Entity
-public class Item {
+public class Product {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue
     private Long id;
     private String name;
-    private int price;
-    private int stockQuantity;
 
-    @ManyToMany(mappedBy = "items")
-    private List<Category> categories = new ArrayList<>();
-
+    @OneToMany(mappedBy = "product")
+    private List<MemberProduct> memberProducts = new ArrayList<>();
 }

@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "ORDERS") // ORDER가 DB 예약어라 다르게 함
-public class Order {
+public class Order extends BaseEntity{
 
     @Id @GeneratedValue
     private Long id;

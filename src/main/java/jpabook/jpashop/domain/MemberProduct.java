@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 // 다대다 관계를 풀기위한 별도의 엔티티(다른 속성도 추가가 가능해짐)
 @Data
 @Entity
-public class MemberProduct {
+public class MemberProduct extends BaseEntity {
 
     @Id @GeneratedValue
     private Long id;

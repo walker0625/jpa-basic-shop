@@ -1,5 +1,6 @@
 package jpabook.jpashop;
 
+import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 
@@ -20,10 +21,12 @@ public class JpaMain {
 
         try {
 
-            em.flush();
-            em.clear();
-
+            Member member = new Member();
+            member.setName("minwoo");
+            member.setAddress(new Address("AA", "BB", "CC"));
             // Member refMember = em.getReference(Member.class, member.getId()); // 프록시 객체
+
+            em.persist(member);
 
             tx.commit();
         } catch (Exception e) {

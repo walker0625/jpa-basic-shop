@@ -1,6 +1,5 @@
 package jpabook.jpashop;
 
-import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
 
 import javax.persistence.EntityManager;
@@ -20,43 +19,40 @@ public class JpaMain {
         tx.begin();
 
         try {
+            Member member1 = new Member();
+            member1.setName("kim1");
 
-            Member member = new Member();
-            member.setName("minwoo");
-            member.setHomeAddress(new Address("AA", "BB", "CC"));
+            em.persist(member1);
 
-            member.getFavoriteFoods().add("a");
-            member.getFavoriteFoods().add("b");
-            member.getFavoriteFoods().add("c");
-            // Member refMember = em.getReference(Member.class, member.getId()); // 프록시 객체
+            Member member2 = new Member();
+            member2.setName("kim2");
 
-            member.getAddressHistory().add(new Address("A1", "BB", "CC"));
-            member.getAddressHistory().add(new Address("A2", "BB", "CC"));
-
-            em.persist(member);
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
-            System.out.println("--------------------------");
+            // JPQL(가장 주로 쓰임) > QueryDSL로 만들어줌 - QueryDSL > JPQL > SQL > DB
+            List<Member> resultList = em.createQuery("SELECT m FROM Member m WHERE m.name LIKE '%kim%'", Member.class).getResultList();
 
-            Member findMember = em.find(Member.class, member.getId());
-
-            List<Address> addressHistory = findMember.getAddressHistory();
-            System.out.println("--------------------------");
-
-            for (Address address : addressHistory) {
-                System.out.println("address.getCity() = " + address.getCity());
+            for (Member member : resultList) {
+                System.out.println("member.getName() = " + member.getName());
             }
 
-            findMember.setHomeAddress(new Address("new AA", "BB", "CC"));
+            // Native Query : 특정 DB에 종속적인 Query에 경우 주로 사용(connect by)
+            List select_name_from_member = em.createNativeQuery("SELECT name FROM MEMBER", Member.class).getResultList();
 
-            findMember.getFavoriteFoods().remove("a");
-            findMember.getFavoriteFoods().add("a1");
 
-            // equals()가 구현되어 있어야 함 > 키에 해당하는 모든 값을 지움(실무에서는 일대다로 푸는게 나음)
-            findMember.getAddressHistory().remove(new Address("A1", "BB", "CC"));
-            findMember.getAddressHistory().add(new Address("new A1", "BB", "CC"));
+
+            /* Critetia : 실무에서 안씀 > 가독성 최악 > QueryDSL 추천
+            CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Member> query = criteriaBuilder.createQuery(Member.class);
+
+            Root<Member> m = query.from(Member.class);
+
+            CriteriaQuery<Member> cq = query.select(m).where(criteriaBuilder.equal(m.get("name"), "kim"));
+            List<Member> resultList1 = em.createQuery(cq).getResultList();
+            */
 
             tx.commit();
         } catch (Exception e) {
